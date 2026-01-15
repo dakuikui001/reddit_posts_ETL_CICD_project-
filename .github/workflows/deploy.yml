@@ -1,0 +1,74 @@
+name: Deploy New Astro Project
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and Push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          # 针对你的 Dockerfile (astro-runtime:12.6.0) 进行多架构构建 
+          platforms: linux/amd64,linux/arm64
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/airflow-02-reddit-project:latest
+          # 开启 GitHub Actions 构建缓存
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Tailscale
+        uses: tailscale/github-action@v2
+        with:
+          authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
+
+      - name: SSH Remote Deploy
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            export PATH="/usr/local/bin:$PATH"
+            
+            # 1. 进入项目目录
+            cd /Users/luhui/Documents/github/airflow-02-reddit-project
+            git pull origin main
+            
+            # 2. 更新镜像
+            echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/airflow-02-reddit-project:latest
+            
+            # 3. 部署并启动
+            docker compose up -d --remove-orphans
+            
+            # 4. 自动化权限修复
+            echo "Waiting for Airflow database to stabilize..."
+            sleep 20
+            docker exec airflow-02-reddit-project airflow sync-perm
+            
+            # 5. 清理旧镜像
+            docker image prune -f
