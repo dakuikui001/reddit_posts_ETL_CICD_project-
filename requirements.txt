@@ -1,0 +1,26 @@
+# --- 1. 爬虫与 API 采集 ---
+requests
+pandas
+beautifulsoup4
+praw                # 建议加入，Reddit 官方 SDK
+papermill
+ipykernel
+
+# --- 2. Airflow 官方 Provider ---
+apache-airflow-providers-apache-spark
+apache-airflow-providers-amazon
+apache-airflow-providers-trino
+
+# --- 3. Lakehouse 核心驱动 ---
+delta-spark==3.2.0
+trino
+boto3               # 用于 MinIO 的文件管理
+
+# --- 4. 数据处理与校验 ---
+pyspark==3.5.3
+great_expectations==1.10.0
+numpy
+
+# --- 5. 环境与工具 ---
+python-dotenv       # 加载 .env 中的 API Keys
+pendulum            # Airflow 推荐的时间处理库

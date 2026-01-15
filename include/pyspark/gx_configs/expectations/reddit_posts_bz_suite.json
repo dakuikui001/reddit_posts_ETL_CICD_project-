@@ -1,0 +1,101 @@
+{
+  "expectations": [
+    {
+      "id": "1baacc51-7d9c-4a4c-a4da-a65c155f822e",
+      "kwargs": {
+        "column_set": [
+          "post_id",
+          "title",
+          "author",
+          "score",
+          "upvote_ratio",
+          "comments",
+          "flair",
+          "is_video",
+          "is_self",
+          "domain",
+          "url",
+          "created_utc",
+          "selftext",
+          "extracted_time",
+          "load_time",
+          "_dq_batch_id"
+        ]
+      },
+      "meta": {},
+      "severity": "critical",
+      "type": "expect_table_columns_to_match_set"
+    },
+    {
+      "id": "0ffe923c-4fc1-470f-8d7d-64d6fb8e037c",
+      "kwargs": {
+        "column": "post_id"
+      },
+      "meta": {},
+      "severity": "critical",
+      "type": "expect_column_values_to_not_be_null"
+    },
+    {
+      "id": "9e9f0d6d-0603-4a85-826f-67591bb4cbb8",
+      "kwargs": {
+        "column": "title"
+      },
+      "meta": {},
+      "severity": "critical",
+      "type": "expect_column_values_to_not_be_null"
+    },
+    {
+      "id": "c9d3f318-5396-405b-a3e1-2ef6f1882647",
+      "kwargs": {
+        "column": "created_utc",
+        "strftime_format": "%Y-%m-%d %H:%M:%S"
+      },
+      "meta": {},
+      "severity": "critical",
+      "type": "expect_column_values_to_match_strftime_format"
+    },
+    {
+      "id": "9df91433-29b3-4cff-8894-6d3067cc61a0",
+      "kwargs": {
+        "column": "is_video",
+        "value_set": [
+          "True",
+          "False"
+        ]
+      },
+      "meta": {},
+      "severity": "critical",
+      "type": "expect_column_values_to_be_in_set"
+    },
+    {
+      "id": "5234a632-fc56-48c4-99c9-8f679d0d6448",
+      "kwargs": {
+        "column": "is_self",
+        "value_set": [
+          "True",
+          "False"
+        ]
+      },
+      "meta": {},
+      "severity": "critical",
+      "type": "expect_column_values_to_be_in_set"
+    },
+    {
+      "id": "6268d711-d79b-40b9-9ce5-6d6d86c449b8",
+      "kwargs": {
+        "column": "upvote_ratio",
+        "max_value": 1.0,
+        "min_value": 0.0
+      },
+      "meta": {},
+      "severity": "critical",
+      "type": "expect_column_values_to_be_between"
+    }
+  ],
+  "id": "f696735c-43a9-4408-b058-cada678cb5ed",
+  "meta": {
+    "great_expectations_version": "1.10.0"
+  },
+  "name": "reddit_posts_bz_suite",
+  "notes": null
+}

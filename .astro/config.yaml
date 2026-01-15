@@ -1,0 +1,6 @@
+project:
+  name: airflow-02-reddit-project
+webserver:
+  port: 8085   # 浏览器访问这个项目的端口
+postgres:
+  port: 5435   # 这个项目数据库的端口

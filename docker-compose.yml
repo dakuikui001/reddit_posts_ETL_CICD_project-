@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  astro-app:
+    image: ${DOCKERHUB_USERNAME}/airflow-02-reddit-project:latest
+    container_name: airflow-02-reddit-project
+    # 之前调试成功的权限修复逻辑
+    command: >
+      bash -c "
+      airflow db migrate &&
+      airflow roles create Admin || true &&
+      airflow users create --username admin --password admin --firstname admin --lastname admin --role Admin --email admin@example.com || true &&
+      airflow sync-perm &&
+      (airflow webserver & airflow scheduler)
+      "
+    env_file:
+      - .env
+    environment:
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=sqlite:////usr/local/airflow/airflow.db
+    ports:
+      - "8085:8080"
+    # 这里直接指定 override 里的网络 
+    networks:
+      - data_lake_net
+
+networks:
+  data_lake_net:
+    [cite_start]external: true # 明确引用外部网络
